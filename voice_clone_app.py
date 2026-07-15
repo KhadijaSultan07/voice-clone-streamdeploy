@@ -1,23 +1,14 @@
 import streamlit as st
 import os
 import tempfile
-import subprocess
-import sys
 
 st.set_page_config(page_title="Urdu Voice Cloning", page_icon="🎙️")
 
 st.title("🎙️ Urdu Voice Cloning Studio")
 st.markdown("30+ Languages | 48kHz Quality | Free")
 
-# Force install soundfile if missing
-try:
-    import soundfile as sf
-except ImportError:
-    st.warning("Installing soundfile... This may take a minute.")
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "soundfile", "--no-cache-dir", "--force-reinstall"])
-    import soundfile as sf
-    st.success("✅ soundfile installed!")
-
+# Direct import - packages.txt se install ho jayega
+import soundfile as sf
 from voxcpm import VoxCPM
 
 @st.cache_resource
