@@ -1,7 +1,2 @@
-ffmpeg
 libsndfile1
-python3-dev
-build-essential
-pkg-config
-libcairo2-dev
-libgirepository1.0-dev
+ffmpeg
