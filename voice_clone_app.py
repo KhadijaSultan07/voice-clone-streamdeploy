@@ -1,17 +1,24 @@
-
 import streamlit as st
 import os
 import tempfile
 import soundfile as sf
-from voxcpm import VoxCPM
+import sys
 
-# Page config
 st.set_page_config(page_title="Urdu Voice Cloning", page_icon="🎙️")
 
 st.title("🎙️ Urdu Voice Cloning Studio")
 st.markdown("30+ Languages | 48kHz Quality | Free")
 
-# Model load with caching
+# Install soundfile if not available
+try:
+    import soundfile as sf
+except ImportError:
+    st.warning("Installing soundfile... Please wait.")
+    os.system("pip install soundfile")
+    import soundfile as sf
+
+from voxcpm import VoxCPM
+
 @st.cache_resource
 def load_model():
     return VoxCPM.from_pretrained("openbmb/VoxCPM2", load_denoiser=False)
@@ -37,7 +44,6 @@ def generate_voice(text, audio_file):
     except Exception as e:
         return f"Error: {str(e)}"
 
-# UI
 with st.form("voice_form"):
     text = st.text_area("📝 Text", height=100, placeholder="Urdu, English, Arabic...")
     audio_file = st.file_uploader("🎤 Reference Audio (Optional)", type=["wav", "mp3"])
