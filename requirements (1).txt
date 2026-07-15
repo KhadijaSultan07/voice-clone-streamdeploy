@@ -5,3 +5,6 @@ torch
 huggingface-hub
 librosa
 numpy
+wheel
+setuptools
+pip
