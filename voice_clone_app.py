@@ -1,7 +1,7 @@
 import streamlit as st
 import os
 import tempfile
-import soundfile as sf
+import subprocess
 import sys
 
 st.set_page_config(page_title="Urdu Voice Cloning", page_icon="🎙️")
@@ -9,13 +9,14 @@ st.set_page_config(page_title="Urdu Voice Cloning", page_icon="🎙️")
 st.title("🎙️ Urdu Voice Cloning Studio")
 st.markdown("30+ Languages | 48kHz Quality | Free")
 
-# Install soundfile if not available
+# Force install soundfile if missing
 try:
     import soundfile as sf
 except ImportError:
-    st.warning("Installing soundfile... Please wait.")
-    os.system("pip install soundfile")
+    st.warning("Installing soundfile... This may take a minute.")
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "soundfile", "--no-cache-dir", "--force-reinstall"])
     import soundfile as sf
+    st.success("✅ soundfile installed!")
 
 from voxcpm import VoxCPM
 
