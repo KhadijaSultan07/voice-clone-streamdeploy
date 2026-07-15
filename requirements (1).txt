@@ -1,8 +1,5 @@
 soundfile
-cffi
-numpy
 voxcpm
 streamlit
 torch
 huggingface-hub
-librosa
