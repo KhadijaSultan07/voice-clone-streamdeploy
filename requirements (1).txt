@@ -1,0 +1,6 @@
+
+voxcpm
+streamlit
+soundfile
+torch
+huggingface-hub
