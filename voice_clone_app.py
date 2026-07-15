@@ -3,6 +3,8 @@ import os
 import tempfile
 import soundfile as sf
 from voxcpm import VoxCPM
+import signal
+import time
 
 st.set_page_config(page_title="Urdu Voice Cloning", page_icon="🎙️")
 st.title("🎙️ Urdu Voice Cloning Studio")
