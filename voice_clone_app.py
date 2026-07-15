@@ -26,7 +26,7 @@ def generate_voice(text, audio_file):
                 tmp_ref.write(audio_file.read())
                 wav = model.generate(text, reference_wav_path=tmp_ref.name)
         else:
-            wav = model.generate(text)
+            wav = model.generate(text, cfg_value=1.5, inference_timesteps=5)
         
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_out:
             sf.write(tmp_out.name, wav, 48000)
