@@ -30,7 +30,7 @@ except Exception as e:
 # ============================================
 # GENERATE VOICE FUNCTION
 # ============================================
-def generate_voice(text, audio_file):
+def generate_voice(text, audio_file, speed, inference_steps, cfg_value, denoise):
     try:
         if audio_file is not None:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_ref:
@@ -38,14 +38,18 @@ def generate_voice(text, audio_file):
                 wav = model.generate(
                     text, 
                     reference_wav_path=tmp_ref.name,
-                    cfg_value=1.5,
-                    inference_timesteps=5
+                    speed=speed,
+                    inference_timesteps=inference_steps,
+                    cfg_value=cfg_value,
+                    denoise=denoise
                 )
         else:
             wav = model.generate(
                 text,
-                cfg_value=1.5,
-                inference_timesteps=5
+                speed=speed,
+                inference_timesteps=inference_steps,
+                cfg_value=cfg_value,
+                denoise=denoise
             )
         
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmp_out:
@@ -57,7 +61,7 @@ def generate_voice(text, audio_file):
 # ============================================
 # TIMEOUT HANDLING
 # ============================================
-def generate_with_timeout(text, audio_file, timeout=120):
+def generate_with_timeout(text, audio_file, speed, inference_steps, cfg_value, denoise, timeout=120):
     def handler(signum, frame):
         raise TimeoutError("Generation timed out!")
     
@@ -65,7 +69,7 @@ def generate_with_timeout(text, audio_file, timeout=120):
     signal.alarm(timeout)
     
     try:
-        result = generate_voice(text, audio_file)
+        result = generate_voice(text, audio_file, speed, inference_steps, cfg_value, denoise)
         signal.alarm(0)
         return result
     except TimeoutError:
@@ -85,6 +89,46 @@ with st.form("voice_form"):
         type=["wav", "mp3"],
         help="Voice cloning ke liye reference audio upload karein"
     )
+    
+    # ============================================
+    # GENERATION SETTINGS (ADVANCED)
+    # ============================================
+    with st.expander("⚙️ Generation Settings (Advanced)"):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            speed = st.slider(
+                "Speed", 
+                min_value=0.5, 
+                max_value=2.0, 
+                value=1.0, 
+                step=0.1,
+                help="1.0 = normal. >1 faster, <1 slower"
+            )
+            inference_steps = st.slider(
+                "Inference Steps", 
+                min_value=4, 
+                max_value=64, 
+                value=10, 
+                step=1,
+                help="Lower = faster, higher = better quality"
+            )
+        
+        with col2:
+            cfg_value = st.slider(
+                "Guidance Scale (CFG)", 
+                min_value=0.0, 
+                max_value=4.0, 
+                value=1.8, 
+                step=0.1,
+                help="Voice similarity control"
+            )
+            denoise = st.checkbox(
+                "Denoise", 
+                value=True,
+                help="Remove background noise"
+            )
+    
     submitted = st.form_submit_button("🎵 Generate Voice")
 
 # ============================================
@@ -92,7 +136,7 @@ with st.form("voice_form"):
 # ============================================
 if submitted and text:
     with st.spinner("Generating voice (1-2 minutes)..."):
-        result = generate_with_timeout(text, audio_file, timeout=120)
+        result = generate_with_timeout(text, audio_file, speed, inference_steps, cfg_value, denoise)
         
         if result.startswith("Error"):
             st.error(result)
